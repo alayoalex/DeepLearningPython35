@@ -1,1 +1,10 @@
 __pycache__
+*~
+*.org
+*.pem
+*.pkl
+*.pyc
+.DS_Store
+loc.py
+src/ec2
+.venv/
