@@ -8,3 +8,4 @@ __pycache__
 loc.py
 src/ec2
 .venv/
+.vscode/
