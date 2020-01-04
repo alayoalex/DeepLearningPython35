@@ -9,3 +9,4 @@ loc.py
 src/ec2
 .venv/
 .vscode/
+datasets/
