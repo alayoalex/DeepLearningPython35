@@ -67,6 +67,7 @@ class NeuralNetMLP(object):
         self.shuffle = shuffle
         self.minibatches = minibatches
 
+    
     def _encode_labels(self, y, k):
         """Encode labels into one-hot representation
 
@@ -85,16 +86,19 @@ class NeuralNetMLP(object):
             onehot[val, idx] = 1.0
         return onehot
 
+    
     def _initialize_weights(self):
         """Initialize weights with small random numbers."""
-        w1 = np.random.uniform(-1.0, 1.0,
-                               size=self.n_hidden*(self.n_features + 1))
+        
+        w1 = np.random.uniform(-1.0, 1.0, size=self.n_hidden*(self.n_features + 1))
         w1 = w1.reshape(self.n_hidden, self.n_features + 1)
-        w2 = np.random.uniform(-1.0, 1.0,
-                               size=self.n_output*(self.n_hidden + 1))
+        
+        w2 = np.random.uniform(-1.0, 1.0, size=self.n_output*(self.n_hidden + 1))
         w2 = w2.reshape(self.n_output, self.n_hidden + 1)
+        
         return w1, w2
 
+    
     def _sigmoid(self, z):
         """Compute logistic function (sigmoid)
 
@@ -105,11 +109,13 @@ class NeuralNetMLP(object):
         return 1.0 / (1.0 + np.exp(-z))
         #return expit(z)
 
+    
     def _sigmoid_gradient(self, z):
         """Compute gradient of the logistic function"""
         sg = self._sigmoid(z)
         return sg * (1.0 - sg)
 
+    
     def _add_bias_unit(self, X, how='column'):
         """Add bias unit (column or row of 1s) to array at index 0"""
         if how == 'column':
@@ -122,6 +128,7 @@ class NeuralNetMLP(object):
             raise AttributeError('`how` must be `column` or `row`')
         return X_new
 
+    
     def _feedforward(self, X, w1, w2):
         """Compute feedforward step
 
@@ -156,16 +163,17 @@ class NeuralNetMLP(object):
         a3 = self._sigmoid(z3)
         return a1, z2, a2, z3, a3
 
+    
     def _L2_reg(self, lambda_, w1, w2):
         """Compute L2-regularization cost"""
-        return (lambda_/2.0) * (np.sum(w1[:, 1:] ** 2) +
-                                np.sum(w2[:, 1:] ** 2))
+        return (lambda_/2.0) * (np.sum(w1[:, 1:] ** 2) + np.sum(w2[:, 1:] ** 2))
 
+    
     def _L1_reg(self, lambda_, w1, w2):
         """Compute L1-regularization cost"""
-        return (lambda_/2.0) * (np.abs(w1[:, 1:]).sum() +
-                                np.abs(w2[:, 1:]).sum())
+        return (lambda_/2.0) * (np.abs(w1[:, 1:]).sum() + np.abs(w2[:, 1:]).sum())
 
+    
     def _get_cost(self, y_enc, output, w1, w2):
         """Compute cost function.
 
@@ -188,12 +196,16 @@ class NeuralNetMLP(object):
         """
         term1 = -y_enc * (np.log(output))
         term2 = (1.0 - y_enc) * np.log(1.0 - output)
+        
         cost = np.sum(term1 - term2)
+        
         L1_term = self._L1_reg(self.l1, w1, w2)
         L2_term = self._L2_reg(self.l2, w1, w2)
+        
         cost = cost + L1_term + L2_term
         return cost
 
+    
     def _get_gradient(self, a1, a2, a3, z2, y_enc, w1, w2):
         """ Compute gradient step using backpropagation.
 
@@ -238,6 +250,7 @@ class NeuralNetMLP(object):
 
         return grad1, grad2
 
+    
     def predict(self, X):
         """Predict class labels
 
@@ -261,6 +274,7 @@ class NeuralNetMLP(object):
         y_pred = np.argmax(z3, axis=0)
         return y_pred
 
+    
     def fit(self, X, y, print_progress=False):
         """ Learn weights from training data.
 
@@ -287,12 +301,11 @@ class NeuralNetMLP(object):
         delta_w2_prev = np.zeros(self.w2.shape)
 
         for i in range(self.epochs):
-
             # adaptive learning rate
             self.eta /= (1 + self.decrease_const*i)
 
             if print_progress:
-                sys.stderr.write('\rEpoch: %d/%d' % (i+1, self.epochs))
+                sys.stderr.write('\rEpoch: %d/%d' % (i + 1, self.epochs))
                 sys.stderr.flush()
 
             if self.shuffle:
@@ -300,16 +313,11 @@ class NeuralNetMLP(object):
                 X_data, y_enc = X_data[idx], y_enc[:, idx]
 
             mini = np.array_split(range(y_data.shape[0]), self.minibatches)
+            
             for idx in mini:
-
                 # feedforward
-                a1, z2, a2, z3, a3 = self._feedforward(X_data[idx],
-                                                       self.w1,
-                                                       self.w2)
-                cost = self._get_cost(y_enc=y_enc[:, idx],
-                                      output=a3,
-                                      w1=self.w1,
-                                      w2=self.w2)
+                a1, z2, a2, z3, a3 = self._feedforward(X_data[idx], self.w1, self.w2)
+                cost = self._get_cost(y_enc=y_enc[:, idx], output=a3, w1=self.w1, w2=self.w2)
                 self.cost_.append(cost)
 
                 # compute gradient via backpropagation

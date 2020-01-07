@@ -3,9 +3,9 @@ mnist_average_darkness
 ~~~~~~~~~~~~~~~~~~~~~~
 
 A naive classifier for recognizing handwritten digits from the MNIST
-data set.  The program classifies digits based on how dark they are
+dataset.  The program classifies digits based on how dark they are
 --- the idea is that digits like "1" tend to be less dark than digits
-like "8", simply because the latter has a more complex shape.  When
+like "8", simply because the letter has a more complex shape.  When
 shown an image the classifier returns whichever digit in the training
 data had the closest average darkness.
 
@@ -39,7 +39,7 @@ def main():
 def avg_darknesses(training_data):
     """ Return a defaultdict whose keys are the digits 0 through 9.
     For each digit we compute a value which is the average darkness of
-    training images containing that digit.  The darkness for any
+    training images containing that digit. The darkness for any
     particular image is just the sum of the darknesses for each pixel."""
     digit_counts = defaultdict(int)
     darknesses = defaultdict(float)
