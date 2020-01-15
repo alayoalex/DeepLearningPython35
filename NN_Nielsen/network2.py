@@ -25,15 +25,15 @@ class QuadraticCost(object):
 
     @staticmethod
     def fn(a, y):
-        """Return the cost associated with an output ``a`` and desired output
-        ``y``.
+        """Return the cost associated with an output ``a`` 
+        and desired output ``y``.
         """
-        return 0.5*np.linalg.norm(a-y)**2
+        return 0.5*np.linalg.norm(a - y)**2
 
     @staticmethod
     def delta(z, a, y):
         """Return the error delta from the output layer."""
-        return (a-y) * sigmoid_prime(z)
+        return (a - y)*sigmoid_prime(z)
 
 
 class CrossEntropyCost(object):
@@ -57,7 +57,7 @@ class CrossEntropyCost(object):
         the method's parameters in order to make the interface
         consistent with the delta method for other cost classes.
         """
-        return (a-y)
+        return (a - y)
 
 
 #### Main Network class
@@ -231,6 +231,7 @@ class Network(object):
             nabla_b = [nb+dnb for nb, dnb in zip(nabla_b, delta_nabla_b)]
             nabla_w = [nw+dnw for nw, dnw in zip(nabla_w, delta_nabla_w)]
         
+        # L2 Regularization
         self.weights = [(1 - eta*(lmbda/n))*w - (eta/len(mini_batch))*nw
                         for w, nw in zip(self.weights, nabla_w)]
 
@@ -238,7 +239,6 @@ class Network(object):
         #self.weights = [w - eta*(lmbda/n)*(w/abs(w)) - (eta/len(mini_batch))*nw
               #         for w, nw in zip(self.weights, nabla_w)]
         
-        # L2 Regularization
         self.biases = [b - (eta/len(mini_batch))*nb
                        for b, nb in zip(self.biases, nabla_b)]
 
