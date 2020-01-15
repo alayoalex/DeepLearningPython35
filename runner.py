@@ -2,19 +2,26 @@ import NN_Nielsen.mnist_loader as ld
 import NN_Nielsen.network as network
 import NN_Nielsen.network2 as network2
 
-# Nielsen
+# Nielsen Network 1
 def training_network():
     training_data, validation_data, test_data = ld.load_data_wrapper()
     net = network.Network([784, 30, 10])
-    net.SGD(training_data, 30, 10, 3.0, test_data=test_data)
+    net.SGD(training_data, 30, 10, 0.5, test_data=test_data)
 
 
-# Nielsen
+# Nielsen Network 2
 def training_network2():
     training_data, validation_data, test_data = ld.load_data_wrapper()
-    net = network2.Network([784, 100, 10], cost=network2.CrossEntropyCost)
+    net = network2.Network([784, 30, 10], cost=network2.CrossEntropyCost)
     net.large_weight_initializer()
-    net.SGD(training_data, 30, 10, 0.5, 
-        evaluation_data=test_data, lmbda = 5.0,
+    net.SGD(training_data, 30, 10, 0.75, 
+        evaluation_data=test_data, lmbda = 1.0,
         monitor_evaluation_cost=True, monitor_evaluation_accuracy=True,
         monitor_training_cost=True, monitor_training_accuracy=True)
+
+
+#print()
+#training_network()
+
+print()
+training_network2()
