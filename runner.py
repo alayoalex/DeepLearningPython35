@@ -1,6 +1,6 @@
-import NN_Nielsen.mnist_loader as ld
-import NN_Nielsen.network as network
-import NN_Nielsen.network2 as network2
+import nn_nielsen.mnist_loader as ld
+import nn_nielsen.network as network
+import nn_nielsen.network2 as network2
 
 # Nielsen Network 1
 def training_network():
