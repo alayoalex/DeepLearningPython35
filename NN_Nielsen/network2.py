@@ -163,6 +163,7 @@ class Network(object):
         # early stopping functionality:
         best_accuracy=0
         no_accuracy_change=0
+        changed_eta=0
 
         evaluation_cost, evaluation_accuracy = [], []
         training_cost, training_accuracy = [], []
@@ -173,8 +174,7 @@ class Network(object):
                 training_data[k:k+mini_batch_size]
                 for k in range(0, n, mini_batch_size)]
             for mini_batch in mini_batches:
-                self.update_mini_batch(
-                    mini_batch, eta, lmbda, len(training_data))
+                self.update_mini_batch(mini_batch, eta, lmbda, len(training_data))
 
             print("Epoch %s training complete" % j)
 
@@ -198,21 +198,36 @@ class Network(object):
                 evaluation_accuracy.append(accuracy)
                 print("Accuracy on evaluation data: {} / {}".format(self.accuracy(evaluation_data), n_data))
 
+            # EXERCISES OF CHAPTER 3 PAGES 82,83
+
             # Early stopping:
             if early_stopping_n > 0:
                 if accuracy > best_accuracy:
                     best_accuracy = accuracy
                     no_accuracy_change = 0
-                    #print("Early-stopping: Best so far {}".format(best_accuracy))
+                    print("Early-stopping: Best so far {}".format(best_accuracy))
                 else:
                     no_accuracy_change += 1
 
                 if (no_accuracy_change == early_stopping_n):
-                    #print("Early-stopping: No accuracy change in last epochs: {}".format(early_stopping_n))
+                    print("Early-stopping: No accuracy change in last epochs: {}".format(early_stopping_n))
                     return evaluation_cost, evaluation_accuracy, training_cost, training_accuracy
 
-        return evaluation_cost, evaluation_accuracy, \
-            training_cost, training_accuracy
+                # halves the learning rate each time the validation accuracy
+                # satisfies the no-improvement-in-10 rule; and terminates when
+                # the learning rate has dropped to 1/128 of its original value.
+                #if (no_accuracy_change == early_stopping_n and changed_eta < 7):
+                    #print("Early-stopping: No accuracy change in last epochs: {}".format(early_stopping_n))
+                    #eta = eta/2
+                    #changed_eta += 1
+                #else:
+                    #return evaluation_cost, evaluation_accuracy, training_cost, training_accuracy
+
+            # Early stopping, other rule:
+            #if accuracy > 9500 and int(j/epochs*100.0) > 75:
+                #return evaluation_cost, evaluation_accuracy, training_cost, training_accuracy
+
+        return evaluation_cost, evaluation_accuracy, training_cost, training_accuracy
 
 
     def update_mini_batch(self, mini_batch, eta, lmbda, n):

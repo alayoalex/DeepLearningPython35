@@ -17,7 +17,8 @@ def training_network2():
     net.SGD(training_data, 30, 10, 0.75, 
         evaluation_data=test_data, lmbda = 1.0,
         monitor_evaluation_cost=True, monitor_evaluation_accuracy=True,
-        monitor_training_cost=True, monitor_training_accuracy=True)
+        monitor_training_cost=True, monitor_training_accuracy=True,
+        early_stopping_n=10)
 
 
 #print()
