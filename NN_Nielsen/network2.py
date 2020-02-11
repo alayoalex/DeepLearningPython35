@@ -94,6 +94,7 @@ class Network(object):
         self.biases = [np.random.randn(y, 1) for y in self.sizes[1:]]
         self.weights = [np.random.randn(y, x)/np.sqrt(x)
                         for x, y in zip(self.sizes[:-1], self.sizes[1:])]
+        self.momentum = [np.zeros(w.shape) for w in self.weights]
 
 
     def large_weight_initializer(self):
@@ -130,7 +131,8 @@ class Network(object):
             monitor_evaluation_accuracy=False,
             monitor_training_cost=False,
             monitor_training_accuracy=False,
-            early_stopping_n = 0):
+            early_stopping_n = 0,
+            miu=0):
         """Train the neural network using mini-batch stochastic gradient
         descent.  The ``training_data`` is a list of tuples ``(x, y)``
         representing the training inputs and the desired outputs.  The
@@ -174,7 +176,7 @@ class Network(object):
                 training_data[k:k+mini_batch_size]
                 for k in range(0, n, mini_batch_size)]
             for mini_batch in mini_batches:
-                self.update_mini_batch(mini_batch, eta, lmbda, len(training_data))
+                self.update_mini_batch(mini_batch, eta, lmbda, len(training_data), miu)
 
             print("Epoch %s training complete" % j)
 
@@ -230,7 +232,7 @@ class Network(object):
         return evaluation_cost, evaluation_accuracy, training_cost, training_accuracy
 
 
-    def update_mini_batch(self, mini_batch, eta, lmbda, n):
+    def update_mini_batch(self, mini_batch, eta, lmbda, n, miu):
         """Update the network's weights and biases by applying gradient
         descent using backpropagation to a single mini batch.  The
         ``mini_batch`` is a list of tuples ``(x, y)``, ``eta`` is the
@@ -240,20 +242,25 @@ class Network(object):
         """
         nabla_b = [np.zeros(b.shape) for b in self.biases]
         nabla_w = [np.zeros(w.shape) for w in self.weights]
-        
+
         for x, y in mini_batch:
             delta_nabla_b, delta_nabla_w = self.backprop(x, y)
             nabla_b = [nb+dnb for nb, dnb in zip(nabla_b, delta_nabla_b)]
             nabla_w = [nw+dnw for nw, dnw in zip(nabla_w, delta_nabla_w)]
         
         # L2 Regularization
-        self.weights = [(1 - eta*(lmbda/n))*w - (eta/len(mini_batch))*nw
-                        for w, nw in zip(self.weights, nabla_w)]
+        #self.weights = [(1 - eta*(lmbda/n))*w - (eta/len(mini_batch))*nw
+         #               for w, nw in zip(self.weights, nabla_w)]
 
-        # L1 regularization
+        # L1 Regularization
         #self.weights = [w - eta*(lmbda/n)*(w/abs(w)) - (eta/len(mini_batch))*nw
               #         for w, nw in zip(self.weights, nabla_w)]
         
+        # Momentum
+        self.momentum = [miu*mom - (eta/len(mini_batch))*nw 
+                    for mom, nw in zip(self.momentum, nabla_w)]
+        self.weights = [w + m for w, m in zip(self.weights, self.momentum)]
+
         self.biases = [b - (eta/len(mini_batch))*nb
                        for b, nb in zip(self.biases, nabla_b)]
 

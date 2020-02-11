@@ -18,11 +18,13 @@ def training_network2():
         evaluation_data=test_data, lmbda = 1.0,
         monitor_evaluation_cost=True, monitor_evaluation_accuracy=True,
         monitor_training_cost=True, monitor_training_accuracy=True,
-        early_stopping_n=10)
+        early_stopping_n=10,
+        miu=0.75)
 
 
 #print()
 #training_network()
+
 
 print()
 training_network2()
